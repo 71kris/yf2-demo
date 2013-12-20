@@ -1,4 +1,5 @@
 /runtime/*
 /web/assets/*
-composer.lock
-vendor
+/composer.lock
+/vendor
+/config/*
