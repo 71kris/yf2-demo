@@ -1,0 +1,4 @@
+/runtime/*
+/web/assets/*
+composer.lock
+vendor
