@@ -81,18 +81,35 @@ class SiteController extends Controller
 		else
 			$model = $this->loadModel($id);
 
-		if (isset($_POST['Posts']))
-		{
-			$model->load($_POST);
+        require_once('/var/www/yii2-blog-demo/protected/extensions/recaptchalib.php');
 
-			if ($model->save())
-			{
-				Yii::$app->session->setFlash('success', 'Model has been saved');
-				$this->redirect($this->createUrl('site/save', array('id' => $model->id)));
-			}
-			else
-				Yii::$app->session->setFlash('error', 'Model could not be saved');
-		}
+        $privatekey = "6Ld46OMSAAAAAIwT7M5RHyPMQ7WKoQt6MkY0kCz_";
+
+        $resp = false;
+
+        if (isset($_POST["recaptcha_challenge_field"]) && isset($_POST["recaptcha_response_field"]))
+            $resp = recaptcha_check_answer ($privatekey, $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
+
+        if ($resp !== false && $resp->is_valid)
+        {
+            if (isset($_POST['Posts']))
+            {
+                $model->load($_POST);
+
+                if ($model->save())
+                {
+                    Yii::$app->session->setFlash('success', 'Model has been saved');
+                    $this->redirect($this->createUrl('site/save', array('id' => $model->id)));
+                }
+                else
+                    Yii::$app->session->setFlash('error', 'Model could not be saved');
+            }
+        }
+        
+        if ($resp !== false && !$resp->is_valid)
+        {
+            Yii::$app->session->setFlash('error', 'The recaptcha you provide is invalid.');
+        }
 
 		echo $this->render('save', array('model' => $model));
 	}

@@ -30,6 +30,16 @@ class Posts extends \yii\db\ActiveRecord
 		);
 	}
 
+    public function beforeSave($insert)
+    {
+        $this->data = preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '[redacted]', $this->data);
+        $this->title = preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '[redacted]', $this->title);
+
+        $this->data = preg_replace('(hot|pussy|fuck|cunt|shit|damn|sex|sexy|porn|pron|preteen|pre teen|lolita|bitch|cock|dick|suck)', '[redacted]', $this->data);
+
+        return parent::beforeSave($insert);
+    }
+
 	/**
 	 * @inheritdoc
 	 */
